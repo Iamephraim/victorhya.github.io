@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Victorhya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#04050a;
+    --bg-1:#0a0f1d;
+    --ink:#f5ecdf;
+    --ink-dim:rgba(245,236,223,0.62);
+    --gold:#e9c9a0;
+    --rose:#e8637a;
+    --rose-soft:#f0a8ae;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    background:radial-gradient(120% 100% at 50% 15%, var(--bg-1) 0%, var(--bg-0) 70%);
+    overflow:hidden;
+    font-family:'Cormorant Garamond', serif;
+    color:var(--ink);
+  }
+
+  canvas#stars{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    display:block;
+  }
+
+  .fade-veil{
+    position:fixed;
+    top:0; left:0; right:0;
+    height:34vh;
+    z-index:5;
+    pointer-events:none;
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    background:linear-gradient(to bottom,
+      rgba(4,5,10,0.92) 0%,
+      rgba(4,5,10,0.6) 42%,
+      rgba(4,5,10,0) 100%);
+    -webkit-mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+    mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+  }
+
+  .base-veil{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:10vh;
+    z-index:4;
+    pointer-events:none;
+    background:linear-gradient(to top, rgba(4,5,10,0.85), rgba(4,5,10,0));
+  }
+
+  .vignette{
+    position:fixed;
+    inset:0;
+    z-index:3;
+    pointer-events:none;
+    box-shadow: inset 0 0 18vw 4vw rgba(0,0,0,0.55);
+  }
+
+  .credits-wrap{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    display:flex;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .credits{
+    position:absolute;
+    top:100vh;
+    width:min(620px, 86vw);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:2.6rem;
+    animation:scrollUp 145s linear infinite;
+    will-change:transform;
+  }
+
+  @keyframes scrollUp{
+    from{ transform:translateY(0); }
+    to{ transform:translateY(calc(-100vh - 100%)); }
+  }
+
+  .epigraph{
+    font-style:italic;
+    font-weight:300;
+    font-size:clamp(1.3rem, 2.6vw, 1.9rem);
+    line-height:1.75;
+    color:var(--ink);
+    text-shadow:0 0 18px rgba(233,201,160,0.25);
+    margin:0;
+    padding:0 0.5rem;
+  }
+
+  .epigraph + .epigraph{
+    margin-top:-1.4rem;
+  }
+
+  .divider{
+    width:1px;
+    height:3.2rem;
+    background:linear-gradient(to bottom, transparent, var(--rose-soft), transparent);
+    opacity:0.6;
+    margin:0.4rem 0;
+  }
+
+  .para{
+    font-weight:300;
+    font-size:clamp(1.05rem, 2.1vw, 1.3rem);
+    line-height:1.9;
+    color:var(--ink-dim);
+    margin:0;
+    max-width:56ch;
+  }
+
+  .para em{
+    font-style:italic;
+    color:var(--ink);
+  }
+
+  .beats{
+    display:flex;
+    flex-direction:column;
+    gap:1.5rem;
+    margin-top:0.6rem;
+  }
+
+  .beat{
+    font-style:italic;
+    font-weight:300;
+    font-size:clamp(1.1rem, 2.2vw, 1.45rem);
+    line-height:1.6;
+    color:var(--ink);
+    margin:0;
+    opacity:0.92;
+  }
+
+  .beat.final{
+    color:var(--rose-soft);
+    text-shadow:0 0 16px rgba(232,99,122,0.35);
+  }
+
+  .signature{
+    margin-top:1.2rem;
+    font-weight:500;
+    font-size:clamp(1.7rem, 4vw, 2.4rem);
+    letter-spacing:0.04em;
+    color:var(--gold);
+    text-shadow:0 0 24px rgba(233,201,160,0.4);
+  }
+
+  .heart{
+    display:inline-block;
+    color:var(--rose);
+    animation:pulseHeart 2.6s ease-in-out infinite;
+    text-shadow:0 0 20px rgba(232,99,122,0.7);
+  }
+
+  @keyframes pulseHeart{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.18); }
+  }
+
+  .spacer-top, .spacer-bottom{
+    height:40vh;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .credits{
+      position:static;
+      animation:none;
+      top:auto;
+      padding:20vh 0;
+    }
+    .credits-wrap{ overflow-y:auto; }
+    .heart{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="credits-wrap">
+  <div class="credits" id="credits">
+
+    <div class="spacer-top"></div>
+
+    <p class="epigraph">When it's you, I don't need a fantasy</p>
+    <p class="epigraph">When it's you, I won't need an idea of love</p>
+    <p class="epigraph">When it's you, I could never need anything else</p>
+
+    <div class="divider"></div>
+
+    <p class="para">You still leave fleeting sparks I can't explain across conversations. Tell me a fantasy greater than being able to hold you, watching your skin illuminated by love, gracefully tendered to by the rhythm of our fingers tracing paths on ourselves?</p>
+
+    <p class="para">Tell me a fantasy greater than being able to hold you closer, with the knowledge that I've become <em>yours completely</em>?</p>
+
+    <p class="para">Tell me a fantasy greater than you telling me my flavour seconds getting me under your passion?</p>
+
+    <p class="para">Fantasy with you is in the mundane things, in the humane things, in these experiences where I am left in your grace, and undone by this love.</p>
+
+    <div class="divider"></div>
+
+    <div class="beats">
+      <p class="beat">I don't have anything to say but I wanted to be here with you,</p>
+      <p class="beat">I wanted to interlock my fingers with yours,</p>
+      <p class="beat">I wanted to breathe down on your skin,</p>
+      <p class="beat">I wanted to look into your eyes,</p>
+      <p class="beat">I wanted to have genuine contact with your essence and share how much I love you completely,</p>
+      <p class="beat">I wanted to see you smile, or blush, or do anything that makes you giggle,</p>
+      <p class="beat">I wanted to stroke your hair,</p>
+      <p class="beat">I wanted to say I love you......</p>
+      <p class="beat final">with time, I'll do all and more to you, for you, with you.</p>
+    </div>
+
+    <p class="signature">Victorhya <span class="heart">&#10084;</span></p>
+
+    <div class="spacer-bottom"></div>
+
+  </div>
+</div>
+
+<div class="fade-veil"></div>
+<div class="base-veil"></div>
+<div class="vignette"></div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let W, H, DPR;
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- ambient starfield ----------
+  const AMBIENT_COUNT = 140;
+  const ambient = [];
+  for(let i=0;i<AMBIENT_COUNT;i++){
+    ambient.push({
+      xf: Math.random(),
+      yf: Math.random(),
+      r: 0.5 + Math.random()*1.1,
+      baseAlpha: 0.12 + Math.random()*0.22,
+      freq: 0.15 + Math.random()*0.4,
+      phase: Math.random()*Math.PI*2
+    });
+  }
+
+  // ---------- constellation templates (normalized -1..1 local space) ----------
+  function heartPoints(n){
+    const pts = [];
+    for(let i=0;i<n;i++){
+      const t = (i/n) * Math.PI * 2;
+      const x = 16*Math.pow(Math.sin(t),3);
+      const y = -(13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
+      pts.push([x/16, y/16]);
+    }
+    return pts;
+  }
+
+  const templates = [
+    { // triangle
+      points: [[-0.9,0.6],[0.9,0.4],[0.0,-0.8]],
+      edges: [[0,1],[1,2],[2,0]]
+    },
+    { // zigzag, cassiopeia-like
+      points: [[-1,0.5],[-0.4,-0.5],[0.2,0.4],[0.7,-0.6],[1,0.2]],
+      edges: [[0,1],[1,2],[2,3],[3,4]]
+    },
+    { // kite
+      points: [[0,-1],[0.8,0],[0,1],[-0.8,0]],
+      edges: [[0,1],[1,2],[2,3],[3,0]]
+    },
+    { // small dipper
+      points: [[-1,-0.2],[-0.5,0.3],[0,0],[0.5,0.2],[0.9,-0.3],[0.6,-0.9],[0.1,-0.7]],
+      edges: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]
+    },
+    { // heart, used sparingly
+      points: heartPoints(10),
+      edges: (function(){
+        const e=[];
+        for(let i=0;i<10;i++) e.push([i,(i+1)%10]);
+        return e;
+      })(),
+      isHeart:true
+    }
+  ];
+
+  // place instances scattered across the viewport (relative anchors, recomputed on resize automatically since we read W/H live)
+  const instances = [];
+  function buildInstances(){
+    instances.length = 0;
+    const counts = [3,3,3,2,1]; // fewer of the heart template
+    templates.forEach((tpl, ti) => {
+      const n = counts[ti] || 2;
+      for(let i=0;i<n;i++){
+        instances.push({
+          tpl,
+          ax: 0.08 + Math.random()*0.84,
+          ay: 0.08 + Math.random()*0.84,
+          scale: (tpl.isHeart ? 0.05 : 0.06) + Math.random()*0.05,
+          cycle: 13 + Math.random()*9,
+          activeDur: 4.2 + Math.random()*2.2,
+          phase: Math.random()*40
+        });
+      }
+    });
+  }
+  buildInstances();
+
+  function envelope(t, cycle, activeDur){
+    const local = ((t % cycle) + cycle) % cycle;
+    if(local > activeDur) return 0;
+    const progress = local / activeDur;
+    return Math.sin(progress * Math.PI); // 0 -> 1 -> 0
+  }
+
+  let start = performance.now();
+
+  function draw(now){
+    const t = (now - start) / 1000;
+    ctx.clearRect(0,0,W,H);
+
+    // ambient dots
+    ambient.forEach(d => {
+      const twinkle = 0.5 + 0.5*Math.sin(t*d.freq + d.phase);
+      const alpha = d.baseAlpha * (0.6 + 0.4*twinkle);
+      const x = d.xf * W;
+      const y = d.yf * H;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(245,236,223,${alpha.toFixed(3)})`;
+      ctx.arc(x, y, d.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // constellations
+    const minDim = Math.min(W, H);
+    instances.forEach(inst => {
+      const env = envelope(t + inst.phase, inst.cycle, inst.activeDur);
+      const cx = inst.ax * W;
+      const cy = inst.ay * H;
+      const s = inst.scale * minDim;
+
+      const pts = inst.tpl.points.map(p => [cx + p[0]*s, cy + p[1]*s]);
+      const glowColor = inst.tpl.isHeart ? '232,99,122' : '233,201,160';
+
+      // base dim dots always faintly visible
+      pts.forEach(p => {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${glowColor},${(0.10 + env*0.55).toFixed(3)})`;
+        ctx.shadowColor = `rgba(${glowColor},${(0.4*env).toFixed(3)})`;
+        ctx.shadowBlur = 6 + env*10;
+        ctx.arc(p[0], p[1], 1.1 + env*1.3, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.shadowBlur = 0;
+
+      // connecting lines only when active
+      if(env > 0.02){
+        ctx.beginPath();
+        inst.tpl.edges.forEach(([a,b]) => {
+          ctx.moveTo(pts[a][0], pts[a][1]);
+          ctx.lineTo(pts[b][0], pts[b][1]);
+        });
+        ctx.strokeStyle = `rgba(${glowColor},${(env*0.65).toFixed(3)})`;
+        ctx.lineWidth = 1;
+        ctx.shadowColor = `rgba(${glowColor},${(env*0.6).toFixed(3)})`;
+        ctx.shadowBlur = 8;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    });
+
+    if(!reduceMotion){
+      requestAnimationFrame(draw);
+    }
+  }
+
+  requestAnimationFrame(draw);
+  if(reduceMotion){
+    // draw a single static-ish frame
+    setTimeout(() => draw(performance.now()), 50);
+  }
+})();
+</script>
+
+</body>
+</html>
